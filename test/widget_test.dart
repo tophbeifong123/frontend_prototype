@@ -10,6 +10,7 @@ void main() {
         child: PrototypeApp(),
       ),
     );
+    await tester.pumpAndSettle();
 
     // Verify app title loads
     expect(find.text('Frontend Prototype'), findsOneWidget);
