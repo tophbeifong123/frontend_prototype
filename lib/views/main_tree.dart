@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-/// MainTree widget serving as the Shell Container for the Bottom Navigation Bar.
-class MainTree extends StatelessWidget {
+/// Stateful MainTree Shell Container for GoRouter's ShellRoute integration.
+class MainTree extends StatefulWidget {
   final Widget child;
 
   const MainTree({super.key, required this.child});
 
+  @override
+  State<MainTree> createState() => _MainTreeState();
+}
+
+class _MainTreeState extends State<MainTree> {
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.path;
     if (location.startsWith('/search')) return 1;
@@ -18,7 +23,7 @@ class MainTree extends StatelessWidget {
     return 0;
   }
 
-  void _onItemTapped(int index, BuildContext context) {
+  void _onItemTapped(int index) {
     switch (index) {
       case 0:
         context.go('/home');
@@ -43,29 +48,28 @@ class MainTree extends StatelessWidget {
     final selectedIndex = _calculateSelectedIndex(context);
 
     return Scaffold(
-      body: child,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: selectedIndex,
-        onTap: (index) => _onItemTapped(index, context),
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(LucideIcons.home),
+      body: widget.child,
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: selectedIndex,
+        onDestinationSelected: _onItemTapped,
+        destinations: [
+          NavigationDestination(
+            icon: Icon(LucideIcons.house),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             icon: Icon(LucideIcons.search),
             label: 'Search',
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             icon: Icon(LucideIcons.heart),
             label: 'Favorites',
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             icon: Icon(LucideIcons.user),
             label: 'Profile',
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             icon: Icon(LucideIcons.settings),
             label: 'Settings',
           ),

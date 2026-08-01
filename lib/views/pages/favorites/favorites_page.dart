@@ -9,6 +9,7 @@ class FavoritesPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Favorite Pokémon'),
+        centerTitle: false,
       ),
       body: Center(
         child: Padding(
@@ -16,16 +17,22 @@ class FavoritesPage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.favorite_border, size: 48, color: Colors.redAccent),
+              Icon(
+                LucideIcons.construction,
+                size: 64,
+                color: ShadTheme.of(context).colorScheme.primary,
+              ),
               const SizedBox(height: 16),
               Text(
-                'No Favorites Saved Yet',
-                style: ShadTheme.of(context).textTheme.h4,
+                'Favorites Feature Under Construction',
+                style: ShadTheme.of(context).textTheme.h3,
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
               Text(
-                'Mark Pokémon as favorites to access them quickly.',
+                'Personal favorite Pokémon collection management will be available soon!',
                 style: ShadTheme.of(context).textTheme.muted,
+                textAlign: TextAlign.center,
               ),
             ],
           ),

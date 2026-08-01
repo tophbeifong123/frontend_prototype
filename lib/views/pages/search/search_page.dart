@@ -9,28 +9,33 @@ class SearchPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Search Pokémon'),
+        centerTitle: false,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const ShadInput(
-              placeholder: Text('Search by name or PokéAPI ID...'),
-              leading: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Icon(Icons.search, size: 18),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                LucideIcons.construction,
+                size: 64,
+                color: ShadTheme.of(context).colorScheme.primary,
               ),
-            ),
-            const SizedBox(height: 24),
-            Expanded(
-              child: Center(
-                child: Text(
-                  'Search results from PokéAPI will appear here.',
-                  style: ShadTheme.of(context).textTheme.muted,
-                ),
+              const SizedBox(height: 16),
+              Text(
+                'Search Feature Under Construction',
+                style: ShadTheme.of(context).textTheme.h3,
+                textAlign: TextAlign.center,
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                'Advanced PokéAPI search & filtering capability will be available soon!',
+                style: ShadTheme.of(context).textTheme.muted,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );
