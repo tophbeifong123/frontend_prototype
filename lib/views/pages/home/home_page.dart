@@ -5,6 +5,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../blocs/pokemon/pokemon_bloc.dart';
 import '../../../blocs/pokemon/pokemon_event.dart';
 import '../../../blocs/pokemon/pokemon_state.dart';
+import '../../widgets/loading_indicator.dart';
+import '../../widgets/pokemon_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -30,7 +32,7 @@ class _HomePageState extends State<HomePage> {
       body: BlocBuilder<PokemonBloc, PokemonState>(
         builder: (context, state) {
           if (state is PokemonLoading || state is PokemonInitial) {
-            return const Center(child: CircularProgressIndicator());
+            return const LoadingIndicator(message: 'Catching Pokémon data...');
           }
 
           if (state is PokemonError) {
@@ -82,51 +84,9 @@ class _HomePageState extends State<HomePage> {
                 itemCount: list.length,
                 itemBuilder: (context, index) {
                   final item = list[index];
-                  final formattedId = '#${item.id.toString().padLeft(3, '0')}';
-
-                  return GestureDetector(
+                  return PokemonCard(
+                    pokemon: item,
                     onTap: () => context.push('/home/detail/${item.id}'),
-                    child: ShadCard(
-                      title: Text(
-                        '$formattedId ${item.name.toUpperCase()}',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.5,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      child: Expanded(
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Image.network(
-                              item.imageUrl,
-                              height: 100,
-                              fit: BoxFit.contain,
-                              loadingBuilder: (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return const SizedBox(
-                                  height: 100,
-                                  child: Center(
-                                    child: SizedBox(
-                                      width: 24,
-                                      height: 24,
-                                      child: CircularProgressIndicator(strokeWidth: 2),
-                                    ),
-                                  ),
-                                );
-                              },
-                              errorBuilder: (context, error, stackTrace) => const Icon(
-                                Icons.catching_pokemon,
-                                size: 64,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
                   );
                 },
               ),

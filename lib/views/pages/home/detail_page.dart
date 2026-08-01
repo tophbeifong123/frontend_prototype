@@ -5,6 +5,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../blocs/pokemon/pokemon_bloc.dart';
 import '../../../blocs/pokemon/pokemon_event.dart';
 import '../../../blocs/pokemon/pokemon_state.dart';
+import '../../widgets/loading_indicator.dart';
+import '../../widgets/stat_progress_bar.dart';
 
 class DetailPage extends StatefulWidget {
   final int pokemonId;
@@ -38,7 +40,7 @@ class _DetailPageState extends State<DetailPage> {
       body: BlocBuilder<PokemonBloc, PokemonState>(
         builder: (context, state) {
           if (state is PokemonLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const LoadingIndicator(message: 'Fetching Pokémon details...');
           }
 
           if (state is PokemonError) {
@@ -171,56 +173,16 @@ class _DetailPageState extends State<DetailPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Base Stats Card: Label + Score + Progress bar
+                      // Base Stats Card: Reusable StatProgressBar
                       ShadCard(
                         title: const Text('Base Stats'),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           child: Column(
                             children: detail.stats.entries.map((entry) {
-                              final double progress = (entry.value / 255).clamp(0.0, 1.0);
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 6),
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 120,
-                                      child: Text(
-                                        entry.key.toUpperCase(),
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(4),
-                                        child: LinearProgressIndicator(
-                                          value: progress,
-                                          minHeight: 8,
-                                          backgroundColor:
-                                              ShadTheme.of(context).colorScheme.muted,
-                                          valueColor: AlwaysStoppedAnimation<Color>(
-                                            ShadTheme.of(context).colorScheme.primary,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    SizedBox(
-                                      width: 32,
-                                      child: Text(
-                                        '${entry.value}',
-                                        textAlign: TextAlign.end,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 13,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                              return StatProgressBar(
+                                label: entry.key,
+                                value: entry.value,
                               );
                             }).toList(),
                           ),
