@@ -29,7 +29,7 @@ class SettingsScreen extends StatelessWidget {
                       trailing: Switch(
                         value: true,
                         onChanged: (val) {},
-                        activeColor: AppColors.primary,
+                        activeThumbColor: AppColors.primary,
                       ),
                     ),
                     const Divider(color: AppColors.borderDark),
@@ -40,7 +40,7 @@ class SettingsScreen extends StatelessWidget {
                       trailing: Switch(
                         value: true,
                         onChanged: (val) {},
-                        activeColor: AppColors.secondary,
+                        activeThumbColor: AppColors.secondary,
                       ),
                     ),
                     const Divider(color: AppColors.borderDark),

@@ -174,9 +174,11 @@ class DashboardScreen extends ConsumerWidget {
                         );
                       },
                     ),
-                    loading: () => const Center(
+                    loading: () => const Padding(
                       padding: EdgeInsets.all(40),
-                      child: CircularProgressIndicator(),
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
                     ),
                     error: (err, stack) => GlassCard(
                       child: Text(

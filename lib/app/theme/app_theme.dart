@@ -20,9 +20,8 @@ abstract class AppTheme {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
-        scaffoldLineWidth: 0,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.surfaceDark,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -50,7 +49,7 @@ abstract class AppTheme {
         elevation: 0,
         centerTitle: false,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.surfaceLight,
         elevation: 2,
         shape: RoundedRectangleBorder(
