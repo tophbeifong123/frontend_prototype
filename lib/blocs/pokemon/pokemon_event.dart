@@ -8,20 +8,20 @@ abstract class PokemonEvent extends Equatable {
 }
 
 class FetchPokemonList extends PokemonEvent {
-  final int limit;
   final int offset;
+  final int limit;
 
-  const FetchPokemonList({this.limit = 30, this.offset = 0});
+  const FetchPokemonList({this.offset = 0, this.limit = 50});
 
   @override
-  List<Object?> get props => [limit, offset];
+  List<Object?> get props => [offset, limit];
 }
 
 class FetchPokemonDetail extends PokemonEvent {
-  final String idOrName;
+  final int id;
 
-  const FetchPokemonDetail({required this.idOrName});
+  const FetchPokemonDetail({required this.id});
 
   @override
-  List<Object?> get props => [idOrName];
+  List<Object?> get props => [id];
 }

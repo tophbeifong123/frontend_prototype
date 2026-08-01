@@ -18,8 +18,8 @@ class PokemonBloc extends Bloc<PokemonEvent, PokemonState> {
     emit(PokemonLoading());
     try {
       final list = await pokemonRepository.getPokemonList(
-        limit: event.limit,
         offset: event.offset,
+        limit: event.limit,
       );
       emit(PokemonListLoaded(pokemonList: list));
     } catch (e) {
@@ -33,7 +33,7 @@ class PokemonBloc extends Bloc<PokemonEvent, PokemonState> {
   ) async {
     emit(PokemonLoading());
     try {
-      final detail = await pokemonRepository.getPokemonDetail(event.idOrName);
+      final detail = await pokemonRepository.getPokemonDetail(event.id);
       emit(PokemonDetailLoaded(detail: detail));
     } catch (e) {
       emit(PokemonError(message: e.toString().replaceAll('Exception: ', '')));

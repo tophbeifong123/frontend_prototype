@@ -19,7 +19,8 @@ class _DetailPageState extends State<DetailPage> {
   @override
   void initState() {
     super.initState();
-    context.read<PokemonBloc>().add(FetchPokemonDetail(idOrName: widget.id));
+    final int parsedId = int.tryParse(widget.id) ?? 1;
+    context.read<PokemonBloc>().add(FetchPokemonDetail(id: parsedId));
   }
 
   @override
@@ -30,8 +31,7 @@ class _DetailPageState extends State<DetailPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            // Restore list state when navigating back
-            context.read<PokemonBloc>().add(const FetchPokemonList(limit: 30));
+            context.read<PokemonBloc>().add(const FetchPokemonList(limit: 50));
             context.go('/home');
           },
         ),
@@ -64,7 +64,7 @@ class _DetailPageState extends State<DetailPage> {
                     ShadButton(
                       child: const Text('Back to Home'),
                       onPressed: () {
-                        context.read<PokemonBloc>().add(const FetchPokemonList(limit: 30));
+                        context.read<PokemonBloc>().add(const FetchPokemonList(limit: 50));
                         context.go('/home');
                       },
                     ),
@@ -140,28 +140,28 @@ class _DetailPageState extends State<DetailPage> {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        ...detail.stats.map(
-                          (stat) => Padding(
+                        ...detail.stats.entries.map(
+                          (entry) => Padding(
                             padding: const EdgeInsets.symmetric(vertical: 4),
                             child: Row(
                               children: [
                                 SizedBox(
                                   width: 120,
                                   child: Text(
-                                    stat.name.toUpperCase(),
+                                    entry.key.toUpperCase(),
                                     style: const TextStyle(fontSize: 12),
                                   ),
                                 ),
                                 Expanded(
                                   child: LinearProgressIndicator(
-                                    value: (stat.baseStat / 255).clamp(0.0, 1.0),
+                                    value: (entry.value / 255).clamp(0.0, 1.0),
                                     backgroundColor: Colors.grey.shade800,
                                     color: Colors.blueAccent,
                                   ),
                                 ),
                                 const SizedBox(width: 12),
                                 Text(
-                                  '${stat.baseStat}',
+                                  '${entry.value}',
                                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                                 ),
                               ],
@@ -172,7 +172,7 @@ class _DetailPageState extends State<DetailPage> {
                         ShadButton.outline(
                           child: const Text('Back to Home'),
                           onPressed: () {
-                            context.read<PokemonBloc>().add(const FetchPokemonList(limit: 30));
+                            context.read<PokemonBloc>().add(const FetchPokemonList(limit: 50));
                             context.go('/home');
                           },
                         ),

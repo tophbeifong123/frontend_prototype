@@ -8,11 +8,11 @@ class PokemonRepository {
   PokemonRepository({PokeApiService? apiService})
       : apiService = apiService ?? PokeApiService();
 
-  Future<List<PokemonListItem>> getPokemonList({int limit = 30, int offset = 0}) async {
-    return await apiService.fetchPokemonList(limit: limit, offset: offset);
+  Future<List<PokemonListItem>> getPokemonList({int offset = 0, int limit = 50}) async {
+    return await apiService.fetchPokemonList(offset: offset, limit: limit);
   }
 
-  Future<PokemonDetail> getPokemonDetail(String idOrName) async {
-    return await apiService.fetchPokemonDetail(idOrName);
+  Future<PokemonDetail> getPokemonDetail(int id) async {
+    return await apiService.fetchPokemonDetail(id);
   }
 }
