@@ -8,12 +8,17 @@ import '../../views/pages/home/home_page.dart';
 import '../../views/pages/profile/profile_page.dart';
 import '../../views/pages/search/search_page.dart';
 import '../../views/pages/settings/settings_page.dart';
+import '../../views/pages/splash/splash_page.dart';
 
 /// AppRoutes configuration using GoRouter and ShellRoute.
 abstract class AppRoutes {
   static final GoRouter router = GoRouter(
-    initialLocation: '/home',
+    initialLocation: '/splash',
     routes: [
+      GoRoute(
+        path: '/splash',
+        builder: (context, state) => const SplashPage(),
+      ),
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginPage(),

@@ -74,6 +74,8 @@ my_poke_app/
     │   │   └── empty_placeholder.dart # เพลสโฮลเดอร์หน้ากำลังพัฒนา (Under Construction)
     │   │
     │   └── pages/               # Screens / Pages ทั้งหมดของแอปพลิเคชัน
+    │       ├── splash/
+    │       │   └── splash_page.dart    # หน้า Splash Loading Screen (แอนิเมชันโลโก้ + เช็ก Auth Session)
     │       ├── auth/
     │       │   ├── login_page.dart     # หน้า Login สไตล์ Web Card (ShadCard, ShadInput, ShadToast)
     │       │   └── register_page.dart  # หน้า Register เทรนเนอร์ใหม่
