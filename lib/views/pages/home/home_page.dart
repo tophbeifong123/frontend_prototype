@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import '../../../models/pokemon.dart';
-import '../../../services/poke_api_service.dart';
+import '../../../blocs/pokemon/pokemon_bloc.dart';
+import '../../../blocs/pokemon/pokemon_event.dart';
+import '../../../blocs/pokemon/pokemon_state.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,13 +14,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final PokeApiService _apiService = PokeApiService();
-  late Future<List<PokemonListItem>> _pokemonListFuture;
-
   @override
   void initState() {
     super.initState();
-    _pokemonListFuture = _apiService.fetchPokemonList(limit: 30);
+    // Dispatch FetchPokemonList event on initial load
+    context.read<PokemonBloc>().add(const FetchPokemonList(limit: 30));
   }
 
   @override
@@ -28,14 +28,13 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Pokédex Explorer'),
         elevation: 0,
       ),
-      body: FutureBuilder<List<PokemonListItem>>(
-        future: _pokemonListFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: BlocBuilder<PokemonBloc, PokemonState>(
+        builder: (context, state) {
+          if (state is PokemonLoading || state is PokemonInitial) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (snapshot.hasError) {
+          if (state is PokemonError) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
@@ -50,7 +49,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '${snapshot.error}',
+                      state.message,
                       textAlign: TextAlign.center,
                       style: ShadTheme.of(context).textTheme.muted,
                     ),
@@ -58,9 +57,7 @@ class _HomePageState extends State<HomePage> {
                     ShadButton(
                       child: const Text('Retry'),
                       onPressed: () {
-                        setState(() {
-                          _pokemonListFuture = _apiService.fetchPokemonList(limit: 30);
-                        });
+                        context.read<PokemonBloc>().add(const FetchPokemonList(limit: 30));
                       },
                     ),
                   ],
@@ -69,44 +66,54 @@ class _HomePageState extends State<HomePage> {
             );
           }
 
-          final list = snapshot.data ?? [];
-          return GridView.builder(
-            padding: const EdgeInsets.all(16),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 0.85,
-            ),
-            itemCount: list.length,
-            itemBuilder: (context, index) {
-              final pokemon = list[index];
-              return GestureDetector(
-                onTap: () => context.go('/home/detail/${pokemon.id}'),
-                child: ShadCard(
-                  title: Text(
-                    '#${pokemon.id} ${pokemon.name.toUpperCase()}',
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  child: Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 8),
-                        Image.network(
-                          pokemon.imageUrl,
-                          height: 90,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.catching_pokemon, size: 64),
-                        ),
-                      ],
-                    ),
-                  ),
+          if (state is PokemonListLoaded) {
+            final list = state.pokemonList;
+            return RefreshIndicator(
+              onRefresh: () async {
+                context.read<PokemonBloc>().add(const FetchPokemonList(limit: 30));
+              },
+              child: GridView.builder(
+                padding: const EdgeInsets.all(16),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 0.85,
                 ),
-              );
-            },
-          );
+                itemCount: list.length,
+                itemBuilder: (context, index) {
+                  final pokemon = list[index];
+                  return GestureDetector(
+                    onTap: () => context.go('/home/detail/${pokemon.id}'),
+                    child: ShadCard(
+                      title: Text(
+                        '#${pokemon.id} ${pokemon.name.toUpperCase()}',
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      child: Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(height: 8),
+                            Image.network(
+                              pokemon.imageUrl,
+                              height: 90,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.catching_pokemon, size: 64),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          }
+
+          return const SizedBox.shrink();
         },
       ),
     );

@@ -40,6 +40,8 @@ dependencies:
   shadcn_ui: ^0.56.0
   http: ^1.6.0
   lucide_icons: ^0.257.0
+  flutter_bloc: ^9.1.1
+  equatable: ^2.1.0
 
 dev_dependencies:
   flutter_test:

@@ -2,13 +2,16 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/pokemon.dart';
 
-/// HTTP Client Service for PokéAPI integration.
+/// Low-level service for interacting directly with the PokéAPI REST endpoints.
 class PokeApiService {
+  final http.Client client;
   static const String baseUrl = 'https://pokeapi.co/api/v2';
 
-  /// Fetch list of Pokémon with pagination limit & offset
+  PokeApiService({http.Client? client}) : client = client ?? http.Client();
+
+  /// Raw request to fetch Pokémon list JSON
   Future<List<PokemonListItem>> fetchPokemonList({int limit = 30, int offset = 0}) async {
-    final response = await http.get(
+    final response = await client.get(
       Uri.parse('$baseUrl/pokemon?limit=$limit&offset=$offset'),
     );
 
@@ -19,13 +22,13 @@ class PokeApiService {
           .map((item) => PokemonListItem.fromJson(item as Map<String, dynamic>))
           .toList();
     } else {
-      throw Exception('Failed to load Pokémon list from PokéAPI (${response.statusCode})');
+      throw Exception('Failed to fetch Pokémon list (${response.statusCode})');
     }
   }
 
-  /// Fetch detailed information for a specific Pokémon by ID or name
+  /// Raw request to fetch detailed Pokémon JSON by ID or Name
   Future<PokemonDetail> fetchPokemonDetail(String idOrName) async {
-    final response = await http.get(
+    final response = await client.get(
       Uri.parse('$baseUrl/pokemon/$idOrName'),
     );
 
@@ -33,7 +36,7 @@ class PokeApiService {
       final Map<String, dynamic> data = jsonDecode(response.body);
       return PokemonDetail.fromJson(data);
     } else {
-      throw Exception('Failed to load Pokémon details for $idOrName (${response.statusCode})');
+      throw Exception('Failed to fetch Pokémon detail for $idOrName (${response.statusCode})');
     }
   }
 }
