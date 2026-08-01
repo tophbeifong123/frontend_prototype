@@ -7,9 +7,9 @@ import '../../../blocs/pokemon/pokemon_event.dart';
 import '../../../blocs/pokemon/pokemon_state.dart';
 
 class DetailPage extends StatefulWidget {
-  final String id;
+  final int pokemonId;
 
-  const DetailPage({super.key, required this.id});
+  const DetailPage({super.key, required this.pokemonId});
 
   @override
   State<DetailPage> createState() => _DetailPageState();
@@ -19,21 +19,20 @@ class _DetailPageState extends State<DetailPage> {
   @override
   void initState() {
     super.initState();
-    final int parsedId = int.tryParse(widget.id) ?? 1;
-    context.read<PokemonBloc>().add(FetchPokemonDetail(id: parsedId));
+    context.read<PokemonBloc>().add(FetchPokemonDetail(id: widget.pokemonId));
   }
 
   @override
   Widget build(BuildContext context) {
+    final formattedId = '#${widget.pokemonId.toString().padLeft(3, '0')}';
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pokémon #${widget.id} Details'),
+        title: Text('Pokémon $formattedId Details'),
+        centerTitle: false,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            context.read<PokemonBloc>().add(const FetchPokemonList(limit: 50));
-            context.go('/home');
-          },
+          onPressed: () => context.pop(),
         ),
       ),
       body: BlocBuilder<PokemonBloc, PokemonState>(
@@ -52,7 +51,7 @@ class _DetailPageState extends State<DetailPage> {
                     const Icon(Icons.error_outline, color: Colors.red, size: 48),
                     const SizedBox(height: 16),
                     Text(
-                      'Failed to load details for #${widget.id}',
+                      'Failed to load details for $formattedId',
                       style: ShadTheme.of(context).textTheme.h4,
                     ),
                     const SizedBox(height: 8),
@@ -62,11 +61,8 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                     const SizedBox(height: 16),
                     ShadButton(
-                      child: const Text('Back to Home'),
-                      onPressed: () {
-                        context.read<PokemonBloc>().add(const FetchPokemonList(limit: 50));
-                        context.go('/home');
-                      },
+                      child: const Text('Back'),
+                      onPressed: () => context.pop(),
                     ),
                   ],
                 ),
@@ -76,108 +72,161 @@ class _DetailPageState extends State<DetailPage> {
 
           if (state is PokemonDetailLoaded) {
             final detail = state.detail;
+            final formattedDetailId = '#${detail.id.toString().padLeft(3, '0')}';
+
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(20),
               child: Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 500),
-                  child: ShadCard(
-                    title: Text(
-                      detail.name.toUpperCase(),
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                    description: Text('PokéAPI Index: #${detail.id}'),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 16),
-                        Center(
-                          child: Image.network(
-                            detail.imageUrl,
-                            height: 180,
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.catching_pokemon, size: 100),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: detail.types
-                              .map((t) => Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                                    child: ShadBadge(
-                                      child: Text(t.toUpperCase()),
-                                    ),
-                                  ))
-                              .toList(),
-                        ),
-                        const SizedBox(height: 24),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  constraints: const BoxConstraints(maxWidth: 550),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Header: Large official artwork image and Pokémon Name
+                      Center(
+                        child: Column(
                           children: [
-                            Column(
-                              children: [
-                                Text('Height', style: ShadTheme.of(context).textTheme.muted),
-                                const SizedBox(height: 4),
-                                Text('${detail.height / 10} m', style: const TextStyle(fontWeight: FontWeight.bold)),
-                              ],
+                            Image.network(
+                              detail.imageUrl,
+                              height: 200,
+                              fit: BoxFit.contain,
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return const SizedBox(
+                                  height: 200,
+                                  child: Center(child: CircularProgressIndicator()),
+                                );
+                              },
+                              errorBuilder: (context, error, stackTrace) => const Icon(
+                                Icons.catching_pokemon,
+                                size: 120,
+                                color: Colors.grey,
+                              ),
                             ),
-                            Column(
-                              children: [
-                                Text('Weight', style: ShadTheme.of(context).textTheme.muted),
-                                const SizedBox(height: 4),
-                                Text('${detail.weight / 10} kg', style: const TextStyle(fontWeight: FontWeight.bold)),
-                              ],
+                            const SizedBox(height: 16),
+                            Text(
+                              '$formattedDetailId ${detail.name.toUpperCase()}',
+                              style: ShadTheme.of(context).textTheme.h2,
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 12),
+                            // Badges: Show element types using ShadBadge
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              alignment: WrapAlignment.center,
+                              children: detail.types
+                                  .map((type) => ShadBadge(
+                                        child: Text(type.toUpperCase()),
+                                      ))
+                                  .toList(),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 24),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Base Stats',
-                            style: ShadTheme.of(context).textTheme.h4,
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Specs Card: Height (m) and Weight (kg)
+                      ShadCard(
+                        title: const Text('Physical Specs'),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Column(
+                                children: [
+                                  Text(
+                                    'Height',
+                                    style: ShadTheme.of(context).textTheme.muted,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${(detail.height / 10).toStringAsFixed(1)} m',
+                                    style: ShadTheme.of(context).textTheme.h4,
+                                  ),
+                                ],
+                              ),
+                              Container(
+                                width: 1,
+                                height: 36,
+                                color: ShadTheme.of(context).colorScheme.border,
+                              ),
+                              Column(
+                                children: [
+                                  Text(
+                                    'Weight',
+                                    style: ShadTheme.of(context).textTheme.muted,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${(detail.weight / 10).toStringAsFixed(1)} kg',
+                                    style: ShadTheme.of(context).textTheme.h4,
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 12),
-                        ...detail.stats.entries.map(
-                          (entry) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4),
-                            child: Row(
-                              children: [
-                                SizedBox(
-                                  width: 120,
-                                  child: Text(
-                                    entry.key.toUpperCase(),
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Base Stats Card: Label + Score + Progress bar
+                      ShadCard(
+                        title: const Text('Base Stats'),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Column(
+                            children: detail.stats.entries.map((entry) {
+                              final double progress = (entry.value / 255).clamp(0.0, 1.0);
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 6),
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 120,
+                                      child: Text(
+                                        entry.key.toUpperCase(),
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: LinearProgressIndicator(
+                                          value: progress,
+                                          minHeight: 8,
+                                          backgroundColor:
+                                              ShadTheme.of(context).colorScheme.muted,
+                                          valueColor: AlwaysStoppedAnimation<Color>(
+                                            ShadTheme.of(context).colorScheme.primary,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    SizedBox(
+                                      width: 32,
+                                      child: Text(
+                                        '${entry.value}',
+                                        textAlign: TextAlign.end,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                Expanded(
-                                  child: LinearProgressIndicator(
-                                    value: (entry.value / 255).clamp(0.0, 1.0),
-                                    backgroundColor: Colors.grey.shade800,
-                                    color: Colors.blueAccent,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  '${entry.value}',
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                                ),
-                              ],
-                            ),
+                              );
+                            }).toList(),
                           ),
                         ),
-                        const SizedBox(height: 24),
-                        ShadButton.outline(
-                          child: const Text('Back to Home'),
-                          onPressed: () {
-                            context.read<PokemonBloc>().add(const FetchPokemonList(limit: 50));
-                            context.go('/home');
-                          },
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),

@@ -17,8 +17,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // Dispatch FetchPokemonList event on initial load
-    context.read<PokemonBloc>().add(const FetchPokemonList(limit: 30));
+    context.read<PokemonBloc>().add(const FetchPokemonList(offset: 0, limit: 50));
   }
 
   @override
@@ -26,7 +25,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pokédex Explorer'),
-        elevation: 0,
+        centerTitle: false,
       ),
       body: BlocBuilder<PokemonBloc, PokemonState>(
         builder: (context, state) {
@@ -44,7 +43,7 @@ class _HomePageState extends State<HomePage> {
                     const Icon(Icons.error_outline, color: Colors.red, size: 48),
                     const SizedBox(height: 16),
                     Text(
-                      'Failed to load Pokémon',
+                      'Failed to load Pokémon list',
                       style: ShadTheme.of(context).textTheme.h4,
                     ),
                     const SizedBox(height: 8),
@@ -57,7 +56,7 @@ class _HomePageState extends State<HomePage> {
                     ShadButton(
                       child: const Text('Retry'),
                       onPressed: () {
-                        context.read<PokemonBloc>().add(const FetchPokemonList(limit: 30));
+                        context.read<PokemonBloc>().add(const FetchPokemonList(offset: 0, limit: 50));
                       },
                     ),
                   ],
@@ -70,7 +69,7 @@ class _HomePageState extends State<HomePage> {
             final list = state.pokemonList;
             return RefreshIndicator(
               onRefresh: () async {
-                context.read<PokemonBloc>().add(const FetchPokemonList(limit: 30));
+                context.read<PokemonBloc>().add(const FetchPokemonList(offset: 0, limit: 50));
               },
               child: GridView.builder(
                 padding: const EdgeInsets.all(16),
@@ -78,32 +77,53 @@ class _HomePageState extends State<HomePage> {
                   crossAxisCount: 2,
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
-                  childAspectRatio: 0.85,
+                  childAspectRatio: 0.82,
                 ),
                 itemCount: list.length,
                 itemBuilder: (context, index) {
-                  final pokemon = list[index];
+                  final item = list[index];
+                  final formattedId = '#${item.id.toString().padLeft(3, '0')}';
+
                   return GestureDetector(
-                    onTap: () => context.go('/home/detail/${pokemon.id}'),
+                    onTap: () => context.push('/home/detail/${item.id}'),
                     child: ShadCard(
                       title: Text(
-                        '#${pokemon.id} ${pokemon.name.toUpperCase()}',
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        '$formattedId ${item.name.toUpperCase()}',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                       child: Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const SizedBox(height: 8),
-                            Image.network(
-                              pokemon.imageUrl,
-                              height: 90,
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Image.network(
+                              item.imageUrl,
+                              height: 100,
                               fit: BoxFit.contain,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(Icons.catching_pokemon, size: 64),
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return const SizedBox(
+                                  height: 100,
+                                  child: Center(
+                                    child: SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    ),
+                                  ),
+                                );
+                              },
+                              errorBuilder: (context, error, stackTrace) => const Icon(
+                                Icons.catching_pokemon,
+                                size: 64,
+                                color: Colors.grey,
+                              ),
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ),

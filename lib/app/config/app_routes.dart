@@ -32,8 +32,9 @@ abstract class AppRoutes {
               GoRoute(
                 path: 'detail/:id',
                 builder: (context, state) {
-                  final id = state.pathParameters['id'] ?? '1';
-                  return DetailPage(id: id);
+                  final idStr = state.pathParameters['id'] ?? '1';
+                  final pokemonId = int.tryParse(idStr) ?? 1;
+                  return DetailPage(pokemonId: pokemonId);
                 },
               ),
             ],
