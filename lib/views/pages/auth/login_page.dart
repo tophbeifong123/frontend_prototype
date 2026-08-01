@@ -14,14 +14,33 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  void _onLoginSubmitted() {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ShadToaster.of(context).show(
+        ShadToast.destructive(
+          title: const Text('Authentication Error'),
+          description: const Text('Please provide both email and password.'),
+        ),
+      );
+      return;
+    }
+
+    context.read<AuthBloc>().add(
+          AuthLoginRequested(username: email, password: password),
+        );
   }
 
   @override
@@ -32,8 +51,11 @@ class _LoginPageState extends State<LoginPage> {
           if (state is Authenticated) {
             context.go('/home');
           } else if (state is AuthFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+            ShadToaster.of(context).show(
+              ShadToast.destructive(
+                title: const Text('Login Failed'),
+                description: Text(state.message),
+              ),
             );
           }
         },
@@ -44,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 400),
+                constraints: const BoxConstraints(maxWidth: 420),
                 child: ShadCard(
                   title: const Text('Welcome Back'),
                   description: const Text('Sign in to your Pokémon Trainer account'),
@@ -54,9 +76,14 @@ class _LoginPageState extends State<LoginPage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         ShadInput(
-                          controller: _usernameController,
-                          placeholder: const Text('Email / Username'),
+                          controller: _emailController,
+                          placeholder: const Text('Email address'),
+                          keyboardType: TextInputType.emailAddress,
                           enabled: !isLoading,
+                          leading: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Icon(LucideIcons.mail, size: 18),
+                          ),
                         ),
                         const SizedBox(height: 16),
                         ShadInput(
@@ -64,33 +91,31 @@ class _LoginPageState extends State<LoginPage> {
                           placeholder: const Text('Password'),
                           obscureText: true,
                           enabled: !isLoading,
+                          leading: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Icon(LucideIcons.lock, size: 18),
+                          ),
                         ),
                         const SizedBox(height: 24),
                         ShadButton(
-                          onPressed: isLoading
-                              ? null
-                              : () {
-                                  final username = _usernameController.text.trim();
-                                  final password = _passwordController.text.trim();
-                                  context.read<AuthBloc>().add(
-                                        AuthLoginRequested(
-                                          username: username,
-                                          password: password,
-                                        ),
-                                      );
-                                },
+                          onPressed: isLoading ? null : _onLoginSubmitted,
                           child: isLoading
                               ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
                                 )
                               : const Text('Login'),
                         ),
-                        const SizedBox(height: 12),
-                        ShadButton.outline(
-                          onPressed: isLoading ? null : () => context.go('/register'),
-                          child: const Text('Create Account'),
+                        const SizedBox(height: 16),
+                        Center(
+                          child: ShadButton.ghost(
+                            onPressed: isLoading ? null : () => context.go('/register'),
+                            child: const Text("Don't have an account? Register"),
+                          ),
                         ),
                       ],
                     ),

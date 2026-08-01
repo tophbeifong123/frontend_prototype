@@ -26,6 +26,30 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
+  void _onRegisterSubmitted() {
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+      ShadToaster.of(context).show(
+        ShadToast.destructive(
+          title: const Text('Registration Error'),
+          description: const Text('Please fill out all required fields.'),
+        ),
+      );
+      return;
+    }
+
+    context.read<AuthBloc>().add(
+          AuthRegisterRequested(
+            fullName: name,
+            email: email,
+            password: password,
+          ),
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,8 +58,11 @@ class _RegisterPageState extends State<RegisterPage> {
           if (state is Authenticated) {
             context.go('/home');
           } else if (state is AuthFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+            ShadToaster.of(context).show(
+              ShadToast.destructive(
+                title: const Text('Registration Failed'),
+                description: Text(state.message),
+              ),
             );
           }
         },
@@ -46,7 +73,7 @@ class _RegisterPageState extends State<RegisterPage> {
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 400),
+                constraints: const BoxConstraints(maxWidth: 420),
                 child: ShadCard(
                   title: const Text('Trainer Registration'),
                   description: const Text('Create your account to start catching Pokémon'),
@@ -59,12 +86,21 @@ class _RegisterPageState extends State<RegisterPage> {
                           controller: _nameController,
                           placeholder: const Text('Full Name'),
                           enabled: !isLoading,
+                          leading: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Icon(LucideIcons.user, size: 18),
+                          ),
                         ),
                         const SizedBox(height: 16),
                         ShadInput(
                           controller: _emailController,
-                          placeholder: const Text('Email'),
+                          placeholder: const Text('Email address'),
+                          keyboardType: TextInputType.emailAddress,
                           enabled: !isLoading,
+                          leading: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Icon(LucideIcons.mail, size: 18),
+                          ),
                         ),
                         const SizedBox(height: 16),
                         ShadInput(
@@ -72,32 +108,31 @@ class _RegisterPageState extends State<RegisterPage> {
                           placeholder: const Text('Password'),
                           obscureText: true,
                           enabled: !isLoading,
+                          leading: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Icon(LucideIcons.lock, size: 18),
+                          ),
                         ),
                         const SizedBox(height: 24),
                         ShadButton(
-                          onPressed: isLoading
-                              ? null
-                              : () {
-                                  context.read<AuthBloc>().add(
-                                        AuthRegisterRequested(
-                                          fullName: _nameController.text.trim(),
-                                          email: _emailController.text.trim(),
-                                          password: _passwordController.text.trim(),
-                                        ),
-                                      );
-                                },
+                          onPressed: isLoading ? null : _onRegisterSubmitted,
                           child: isLoading
                               ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
                                 )
                               : const Text('Register'),
                         ),
-                        const SizedBox(height: 12),
-                        ShadButton.ghost(
-                          onPressed: isLoading ? null : () => context.go('/login'),
-                          child: const Text('Already have an account? Sign In'),
+                        const SizedBox(height: 16),
+                        Center(
+                          child: ShadButton.ghost(
+                            onPressed: isLoading ? null : () => context.go('/login'),
+                            child: const Text('Already have an account? Sign In'),
+                          ),
                         ),
                       ],
                     ),
