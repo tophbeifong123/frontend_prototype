@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import '../../../blocs/pokemon/pokemon_bloc.dart';
-import '../../../blocs/pokemon/pokemon_event.dart';
-import '../../../blocs/pokemon/pokemon_state.dart';
+import '../../../blocs/pokemon_detail/pokemon_detail_bloc.dart';
+import '../../../blocs/pokemon_detail/pokemon_detail_event.dart';
+import '../../../blocs/pokemon_detail/pokemon_detail_state.dart';
 import '../../widgets/loading_indicator.dart';
 import '../../widgets/stat_progress_bar.dart';
 
@@ -21,7 +21,7 @@ class _DetailPageState extends State<DetailPage> {
   @override
   void initState() {
     super.initState();
-    context.read<PokemonBloc>().add(FetchPokemonDetail(id: widget.pokemonId));
+    context.read<PokemonDetailBloc>().add(FetchPokemonDetail(id: widget.pokemonId));
   }
 
   @override
@@ -37,13 +37,13 @@ class _DetailPageState extends State<DetailPage> {
           onPressed: () => context.pop(),
         ),
       ),
-      body: BlocBuilder<PokemonBloc, PokemonState>(
+      body: BlocBuilder<PokemonDetailBloc, PokemonDetailState>(
         builder: (context, state) {
-          if (state is PokemonLoading) {
+          if (state is PokemonDetailLoading || state is PokemonDetailInitial) {
             return const LoadingIndicator(message: 'Fetching Pokémon details...');
           }
 
-          if (state is PokemonError) {
+          if (state is PokemonDetailError) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),

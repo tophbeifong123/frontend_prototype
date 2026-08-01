@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import '../../../blocs/pokemon/pokemon_bloc.dart';
-import '../../../blocs/pokemon/pokemon_event.dart';
-import '../../../blocs/pokemon/pokemon_state.dart';
+import '../../../blocs/pokemon_list/pokemon_list_bloc.dart';
+import '../../../blocs/pokemon_list/pokemon_list_event.dart';
+import '../../../blocs/pokemon_list/pokemon_list_state.dart';
 import '../../widgets/loading_indicator.dart';
 import '../../widgets/pokemon_card.dart';
 
@@ -19,7 +19,11 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    context.read<PokemonBloc>().add(const FetchPokemonList(offset: 0, limit: 50));
+    // Dispatch FetchPokemonList only if not already loaded
+    final currentBloc = context.read<PokemonListBloc>();
+    if (currentBloc.state is! PokemonListLoaded) {
+      currentBloc.add(const FetchPokemonList(offset: 0, limit: 50));
+    }
   }
 
   @override
@@ -29,13 +33,13 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Pokédex Explorer'),
         centerTitle: false,
       ),
-      body: BlocBuilder<PokemonBloc, PokemonState>(
+      body: BlocBuilder<PokemonListBloc, PokemonListState>(
         builder: (context, state) {
-          if (state is PokemonLoading || state is PokemonInitial) {
+          if (state is PokemonListLoading || state is PokemonListInitial) {
             return const LoadingIndicator(message: 'Catching Pokémon data...');
           }
 
-          if (state is PokemonError) {
+          if (state is PokemonListError) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
@@ -58,7 +62,7 @@ class _HomePageState extends State<HomePage> {
                     ShadButton(
                       child: const Text('Retry'),
                       onPressed: () {
-                        context.read<PokemonBloc>().add(const FetchPokemonList(offset: 0, limit: 50));
+                        context.read<PokemonListBloc>().add(const FetchPokemonList(offset: 0, limit: 50));
                       },
                     ),
                   ],
@@ -71,7 +75,7 @@ class _HomePageState extends State<HomePage> {
             final list = state.pokemonList;
             return RefreshIndicator(
               onRefresh: () async {
-                context.read<PokemonBloc>().add(const FetchPokemonList(offset: 0, limit: 50));
+                context.read<PokemonListBloc>().add(const FetchPokemonList(offset: 0, limit: 50));
               },
               child: GridView.builder(
                 padding: const EdgeInsets.all(16),

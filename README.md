@@ -54,8 +54,15 @@ my_poke_app/
     │   └── auth_repository.dart    # คนกลางจัดการสิทธิ์และการล็อกอิน
     │
     ├── blocs/                   # ⚡ [5] State Management Layer (Flutter BLoC)
-    │   ├── pokemon/             # PokemonBloc, PokemonEvent, PokemonState (ควบคุม State รายชื่อ/รายละเอียด)
-    │   └── auth/                # AuthBloc, AuthEvent, AuthState (ควบคุม State สถานะการล็อกอิน)
+    │   ├── pokemon_list/        # PokemonListBloc, PokemonListEvent, PokemonListState (จัดการ State รายชื่อโปเกมอน)
+    │   │   ├── pokemon_list_bloc.dart
+    │   │   ├── pokemon_list_event.dart
+    │   │   └── pokemon_list_state.dart
+    │   ├── pokemon_detail/      # PokemonDetailBloc, PokemonDetailEvent, PokemonDetailState (จัดการ State รายละเอียดโปเกมอน)
+    │   │   ├── pokemon_detail_bloc.dart
+    │   │   ├── pokemon_detail_event.dart
+    │   │   └── pokemon_detail_state.dart
+    │   └── auth/                # AuthBloc, AuthEvent, AuthState (จัดการ State สถานะการล็อกอิน)
     │
     ├── views/                   # 🎨 [6] Presentation Layer (UI Component & Screens)
     │   ├── main_tree.dart       # Shell Container สำหรับ Bottom Navigation Bar (Material 3 NavigationBar)

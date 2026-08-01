@@ -5,7 +5,8 @@ import 'app/config/app_routes.dart';
 import 'app/config/app_theme.dart';
 import 'blocs/auth/auth_bloc.dart';
 import 'blocs/auth/auth_event.dart';
-import 'blocs/pokemon/pokemon_bloc.dart';
+import 'blocs/pokemon_detail/pokemon_detail_bloc.dart';
+import 'blocs/pokemon_list/pokemon_list_bloc.dart';
 import 'repositories/auth_repository.dart';
 import 'repositories/pokemon_repository.dart';
 
@@ -35,8 +36,13 @@ class PokemonApp extends StatelessWidget {
               authRepository: context.read<AuthRepository>(),
             )..add(AuthCheckStatusRequested()),
           ),
-          BlocProvider<PokemonBloc>(
-            create: (context) => PokemonBloc(
+          BlocProvider<PokemonListBloc>(
+            create: (context) => PokemonListBloc(
+              pokemonRepository: context.read<PokemonRepository>(),
+            ),
+          ),
+          BlocProvider<PokemonDetailBloc>(
+            create: (context) => PokemonDetailBloc(
               pokemonRepository: context.read<PokemonRepository>(),
             ),
           ),
