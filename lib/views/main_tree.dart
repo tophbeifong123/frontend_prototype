@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-/// MainTree widget serving as the ShellRoute wrapper for the main tab views.
+/// MainTree widget serving as the Shell Container for the Bottom Navigation Bar.
 class MainTree extends StatelessWidget {
   final Widget child;
 

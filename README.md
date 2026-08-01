@@ -1,86 +1,84 @@
-# Frontend Prototype 🚀
+# 🐾 Pokémon Application (`my_poke_app`)
 
-A high-performance, modern **Flutter application prototype** built following industry **Best Practices** and **Clean Feature-First Architecture**.
-
-![Flutter](https://img.shields.io/badge/Flutter-3.44.6-02569B?style=for-the-badge&logo=flutter&logoColor=white)
-![Dart](https://img.shields.io/badge/Dart-3.12.2-0175C2?style=for-the-badge&logo=dart&logoColor=white)
-![Riverpod](https://img.shields.io/badge/Riverpod-2.6-00599C?style=for-the-badge&logo=flutter&logoColor=white)
+แอปพลิเคชันค้นหาและแสดงข้อมูลโปเกมอน พัฒนาด้วย **Flutter** ตามสถาปัตยกรรม **Layer-First Architecture** เชื่อมต่อข้อมูลจริงจาก **[PokéAPI](https://pokeapi.co/)** ตกแต่งสไตล์ทันสมัยด้วย **`shadcn_ui`** และจัดการการนำทางด้วย **`go_router`**
 
 ---
 
-## 📐 Architecture & Project Structure
+## 📁 โครงสร้างโปรเจกต์ (Project Structure)
 
-This project adopts a **Feature-First Architecture** combined with **Clean Architecture** principles to promote modularity, scalability, and testability.
-
+```text
+my_poke_app/
+├── android/
+├── ios/
+├── web/
+├── pubspec.yaml                 # Dependencies: shadcn_ui, go_router, http, lucide_icons
+└── lib/
+    ├── app/                     # [1] App Configuration & Setup ส่วนกลาง
+    │   └── config/
+    │       ├── app_routes.dart  # จัดการ Routing ทั้งหมดด้วย go_router (ShellRoute, Path Params)
+    │       └── app_theme.dart   # ตั้งค่า Theme ของ shadcn_ui (Zinc Light/Dark Mode)
+    │
+    ├── models/                  # [2] Data Classes / Deserialization
+    │   └── pokemon.dart         # Data models: PokemonListItem & PokemonDetail
+    │
+    ├── services/                # [3] Network & Business Logic Services
+    │   ├── auth_service.dart    # Mock Login / Register Authentication API
+    │   └── poke_api_service.dart# HTTP Client ยิงขอข้อมูลจาก PokéAPI (List & Detail)
+    │
+    ├── views/                   # [4] UI Layer (Screens & Layouts)
+    │   ├── main_tree.dart       # Shell Container สำคัญสำหรับผูก Bottom Navigation Bar
+    │   │
+    │   └── pages/               # รวมหน้าจอทั้งหมด แยกตามหมวดหมู่
+    │       ├── auth/
+    │       │   ├── login_page.dart     # หน้า Login (ใช้ ShadCard, ShadInput, ShadButton)
+    │       │   └── register_page.dart  # หน้า Register (ใช้ ShadCard, ShadInput, ShadButton)
+    │       │
+    │       ├── home/
+    │       │   ├── home_page.dart      # หน้าแสดง Grid รายชื่อโปเกมอน จาก PokéAPI
+    │       │   └── detail_page.dart    # หน้าแสดงรายละเอียด, Type (ShadBadge) และ Stats
+    │       │
+    │       ├── search/
+    │       │   └── search_page.dart    # หน้าค้นหาโปเกมอน (Search Bar)
+    │       │
+    │       ├── favorites/
+    │       │   └── favorites_page.dart # หน้าโปเกมอนโปรด (Coming Soon Placeholder)
+    │       │
+    │       ├── profile/
+    │       │   └── profile_page.dart   # หน้าโปรไฟล์เทรนเนอร์ (Profile Placeholder)
+    │       │
+    │       └── settings/
+    │           └── settings_page.dart  # หน้าการตั้งค่าแอปพลิเคชัน
+    │
+    └── main.dart                # [5] Entry Point หลักของแอป (เรียกใช้ ShadApp.router)
 ```
-lib/
-├── app/                        # Global App Configuration
-│   ├── app.dart                # MaterialApp.router configuration
-│   ├── router/                 # GoRouter declarations & deep linking
-│   │   └── app_router.dart
-│   └── theme/                  # Design System (Colors, Typography, Themes)
-│       ├── app_colors.dart
-│       ├── app_theme.dart
-│       └── app_typography.dart
-├── core/                       # Shared Utilities & Base Classes
-│   ├── constants/              # App static constants
-│   ├── errors/                 # Exception & Failure handlers
-│   └── widgets/                # Reusable UI Components (GlassCard, CustomButton, StatusBadge)
-├── features/                   # Self-contained domain modules
-│   ├── dashboard/              # Dashboard Feature
-│   │   ├── data/               # Repositories & Data Sources
-│   │   ├── domain/             # Entities & Models
-│   │   └── presentation/       # Riverpod Controllers & UI Screens
-│   ├── details/                # Detail Views
-│   └── settings/               # System Settings & Preferences
-└── main.dart                   # Entry point wrapped in ProviderScope
-```
 
 ---
 
-## ✨ Key Technical Highlights
+## ⚡ คุณสมบัติหลัก (Features)
 
-1. **State Management**: Scalable reactive state powered by **Flutter Riverpod** (`FutureProvider`, `Provider`).
-2. **Routing**: Declarative navigation & dynamic route params using **GoRouter**.
-3. **Design System**: Modern Dark Mode UI featuring **Glassmorphic components**, custom gradients, and **Google Fonts** (`Outfit` & `Inter`).
-4. **Clean Error Handling**: Strongly-typed `Failure` domain hierarchy.
-5. **Code Quality**: Strict static analysis configured via `analysis_options.yaml`.
+1. **Layer-First Architecture**: จัดโครงสร้างโค้ดแยกตาม Layer ชัดเจน (`app/config`, `models`, `services`, `views`).
+2. **PokéAPI Integration**: ดึงข้อมูลรายชื่อและรายละเอียดโปเกมอนแบบเรียลไทม์จาก [PokéAPI](https://pokeapi.co/).
+3. **Shadcn UI Design System**: ใช้ UI Components จาก `shadcn_ui` เช่น `ShadApp`, `ShadThemeData` (`ShadZincColorScheme`), `ShadCard`, `ShadInput`, `ShadButton`, และ `ShadBadge`.
+4. **Declarative Navigation (`go_router`)**:
+   - `/login`, `/register`: หน้ายืนยันตัวตน.
+   - `ShellRoute` (`MainTree`): ควบคุม Bottom Navigation Bar สำหรับแท็บหลัก (`/home`, `/search`, `/favorites`, `/profile`, `/settings`).
+   - `/home/detail/:id`: Dynamic sub-route สำหรับแสดงรายละเอียดโปเกมอนตาม ID.
 
 ---
 
-## 🚀 Getting Started
+## 🚀 ขั้นตอนการติดตั้งและเริ่มใช้งาน
 
-### Prerequisites
-- [Flutter SDK](https://flutter.dev/docs/get-started/install) (3.x or higher)
-- [Dart SDK](https://dart.dev/get-dart)
-
-### Installation & Execution
-
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/tophbeifong123/frontend_prototype.git
-   cd frontend_prototype
-   ```
-
-2. **Install Dependencies**:
+1. **ดาวน์โหลดการพึ่งพา (Dependencies)**:
    ```bash
    flutter pub get
    ```
 
-3. **Run Code Analysis**:
+2. **ตรวจสอบโค้ด (Static Analysis)**:
    ```bash
    flutter analyze
    ```
 
-4. **Run the Application**:
+3. **รันแอปพลิเคชัน**:
    ```bash
    flutter run
    ```
-
----
-
-## 🛠️ Built With
-- **Flutter**: Cross-platform UI toolkit.
-- **Flutter Riverpod**: Compile-safe state management.
-- **GoRouter**: Declarative routing system.
-- **Google Fonts**: Custom typography engine.

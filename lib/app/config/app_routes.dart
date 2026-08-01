@@ -1,10 +1,10 @@
 import 'package:go_router/go_router.dart';
+import '../../views/main_tree.dart';
 import '../../views/pages/auth/login_page.dart';
 import '../../views/pages/auth/register_page.dart';
 import '../../views/pages/favorites/favorites_page.dart';
 import '../../views/pages/home/detail_page.dart';
 import '../../views/pages/home/home_page.dart';
-import '../../views/pages/main_tree.dart';
 import '../../views/pages/profile/profile_page.dart';
 import '../../views/pages/search/search_page.dart';
 import '../../views/pages/settings/settings_page.dart';
