@@ -226,7 +226,7 @@ class _PokemonResults extends StatelessWidget {
               ),
               itemBuilder: (context, index) {
                 final item = pokemon[index];
-                return PokemonCard(
+                return FavoritePokemonCard(
                   pokemon: item,
                   onTap: () => context.push('/home/detail/${item.id}'),
                 );

@@ -4,6 +4,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'app/config/app_routes.dart';
 import 'app/config/app_theme.dart';
 import 'blocs/auth/auth_bloc.dart';
+import 'blocs/favorites/favorites_cubit.dart';
 import 'blocs/pokemon_detail/pokemon_detail_bloc.dart';
 import 'blocs/pokemon_list/pokemon_list_bloc.dart';
 import 'repositories/auth_repository.dart';
@@ -31,10 +32,10 @@ class PokemonApp extends StatelessWidget {
       child: MultiBlocProvider(
         providers: [
           BlocProvider<AuthBloc>(
-            create: (context) => AuthBloc(
-              authRepository: context.read<AuthRepository>(),
-            ),
+            create: (context) =>
+                AuthBloc(authRepository: context.read<AuthRepository>()),
           ),
+          BlocProvider<FavoritesCubit>(create: (context) => FavoritesCubit()),
           BlocProvider<PokemonListBloc>(
             create: (context) => PokemonListBloc(
               pokemonRepository: context.read<PokemonRepository>(),

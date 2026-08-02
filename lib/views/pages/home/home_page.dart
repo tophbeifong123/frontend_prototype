@@ -29,10 +29,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pokédex Explorer'),
-        centerTitle: false,
-      ),
+      appBar: AppBar(title: const Text('Pokédex Explorer'), centerTitle: false),
       body: BlocBuilder<PokemonListBloc, PokemonListState>(
         builder: (context, state) {
           if (state is PokemonListLoading || state is PokemonListInitial) {
@@ -46,7 +43,11 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                    const Icon(
+                      Icons.error_outline,
+                      color: Colors.red,
+                      size: 48,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       'Failed to load Pokémon list',
@@ -62,7 +63,9 @@ class _HomePageState extends State<HomePage> {
                     ShadButton(
                       child: const Text('Retry'),
                       onPressed: () {
-                        context.read<PokemonListBloc>().add(const FetchPokemonList(offset: 0, limit: 50));
+                        context.read<PokemonListBloc>().add(
+                          const FetchPokemonList(offset: 0, limit: 50),
+                        );
                       },
                     ),
                   ],
@@ -75,7 +78,9 @@ class _HomePageState extends State<HomePage> {
             final list = state.pokemonList;
             return RefreshIndicator(
               onRefresh: () async {
-                context.read<PokemonListBloc>().add(const FetchPokemonList(offset: 0, limit: 50));
+                context.read<PokemonListBloc>().add(
+                  const FetchPokemonList(offset: 0, limit: 50),
+                );
               },
               child: GridView.builder(
                 padding: const EdgeInsets.all(16),
@@ -88,7 +93,7 @@ class _HomePageState extends State<HomePage> {
                 itemCount: list.length,
                 itemBuilder: (context, index) {
                   final item = list[index];
-                  return PokemonCard(
+                  return FavoritePokemonCard(
                     pokemon: item,
                     onTap: () => context.push('/home/detail/${item.id}'),
                   );
