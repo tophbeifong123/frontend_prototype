@@ -54,7 +54,7 @@ class PokeApiService {
     }
 
     final Map<String, dynamic> body = jsonDecode(response.body);
-    final entries = (body['pokemon'] as List<dynamic>).take(24);
+    final entries = body['pokemon'] as List<dynamic>;
     return entries
         .map((entry) => entry['pokemon'] as Map<String, dynamic>)
         .map(PokemonListItem.fromJson)
