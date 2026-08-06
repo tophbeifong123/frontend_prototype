@@ -33,6 +33,18 @@ class PokemonListItem {
   }
 }
 
+class PokemonEvolution {
+  final int id;
+  final String name;
+  final String imageUrl;
+
+  PokemonEvolution({
+    required this.id,
+    required this.name,
+    required this.imageUrl,
+  });
+}
+
 class PokemonDetail {
   final int id;
   final String name;
@@ -41,6 +53,7 @@ class PokemonDetail {
   final List<String> types;
   final Map<String, int> stats;
   final String imageUrl;
+  final List<PokemonEvolution> evolutions;
 
   PokemonDetail({
     required this.id,
@@ -50,9 +63,13 @@ class PokemonDetail {
     required this.types,
     required this.stats,
     required this.imageUrl,
+    this.evolutions = const [],
   });
 
-  factory PokemonDetail.fromJson(Map<String, dynamic> json) {
+  factory PokemonDetail.fromJson(
+    Map<String, dynamic> json, {
+    List<PokemonEvolution> evolutions = const [],
+  }) {
     final int pokeId = json['id'] as int;
 
     final List<String> typesList = (json['types'] as List<dynamic>)
@@ -77,6 +94,7 @@ class PokemonDetail {
       types: typesList,
       stats: statsMap,
       imageUrl: officialArtworkUrl,
+      evolutions: evolutions,
     );
   }
 }

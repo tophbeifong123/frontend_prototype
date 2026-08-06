@@ -5,6 +5,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../blocs/pokemon_detail/pokemon_detail_bloc.dart';
 import '../../../blocs/pokemon_detail/pokemon_detail_event.dart';
 import '../../../blocs/pokemon_detail/pokemon_detail_state.dart';
+import '../../../models/pokemon.dart';
 import '../../widgets/loading_indicator.dart';
 import '../../widgets/stat_progress_bar.dart';
 
@@ -22,6 +23,14 @@ class _DetailPageState extends State<DetailPage> {
   void initState() {
     super.initState();
     context.read<PokemonDetailBloc>().add(FetchPokemonDetail(id: widget.pokemonId));
+  }
+
+  @override
+  void didUpdateWidget(covariant DetailPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.pokemonId != widget.pokemonId) {
+      context.read<PokemonDetailBloc>().add(FetchPokemonDetail(id: widget.pokemonId));
+    }
   }
 
   @override
@@ -188,6 +197,45 @@ class _DetailPageState extends State<DetailPage> {
                           ),
                         ),
                       ),
+
+                      // Evolution Chain Card
+                      if (detail.evolutions.isNotEmpty) ...[
+                        const SizedBox(height: 16),
+                        ShadCard(
+                          title: const Text('Evolution Chain'),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            child: Wrap(
+                              alignment: WrapAlignment.center,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: 8,
+                              runSpacing: 12,
+                              children: [
+                                for (int i = 0; i < detail.evolutions.length; i++) ...[
+                                  if (i > 0)
+                                    const Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 4),
+                                      child: Icon(
+                                        Icons.arrow_forward_ios_rounded,
+                                        size: 14,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  _EvolutionStageCard(
+                                    evolution: detail.evolutions[i],
+                                    isCurrent: detail.evolutions[i].id == detail.id,
+                                    onTap: () {
+                                      if (detail.evolutions[i].id != detail.id) {
+                                        context.push('/home/detail/${detail.evolutions[i].id}');
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -197,6 +245,69 @@ class _DetailPageState extends State<DetailPage> {
 
           return const SizedBox.shrink();
         },
+      ),
+    );
+  }
+}
+
+class _EvolutionStageCard extends StatelessWidget {
+  final PokemonEvolution evolution;
+  final bool isCurrent;
+  final VoidCallback onTap;
+
+  const _EvolutionStageCard({
+    required this.evolution,
+    required this.isCurrent,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final formattedId = '#${evolution.id.toString().padLeft(3, '0')}';
+    final colorScheme = ShadTheme.of(context).colorScheme;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isCurrent ? colorScheme.primary : colorScheme.border,
+            width: isCurrent ? 2 : 1,
+          ),
+          color: isCurrent ? colorScheme.primary.withValues(alpha: 0.08) : null,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.network(
+              evolution.imageUrl,
+              height: 64,
+              width: 64,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) => const Icon(
+                Icons.catching_pokemon,
+                size: 44,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              formattedId,
+              style: const TextStyle(fontSize: 10, color: Colors.grey),
+            ),
+            Text(
+              evolution.name.toUpperCase(),
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isCurrent ? FontWeight.bold : FontWeight.w600,
+                color: isCurrent ? colorScheme.primary : null,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
