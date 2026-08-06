@@ -38,22 +38,35 @@ class FavoritesPage extends StatelessWidget {
           );
         }
 
-        return GridView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: pokemon.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: .82,
-          ),
-          itemBuilder: (context, index) {
-            final item = pokemon[index];
-            return PokemonCard(
-              pokemon: item,
-              isFavorite: true,
-              onFavorite: () => context.read<FavoritesCubit>().toggle(item),
-              onTap: () => context.push('/home/detail/${item.id}'),
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            int crossAxisCount = 2;
+            if (constraints.maxWidth >= 1200) {
+              crossAxisCount = 5;
+            } else if (constraints.maxWidth >= 800) {
+              crossAxisCount = 4;
+            } else if (constraints.maxWidth >= 600) {
+              crossAxisCount = 3;
+            }
+
+            return GridView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: pokemon.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 0.82,
+              ),
+              itemBuilder: (context, index) {
+                final item = pokemon[index];
+                return PokemonCard(
+                  pokemon: item,
+                  isFavorite: true,
+                  onFavorite: () => context.read<FavoritesCubit>().toggle(item),
+                  onTap: () => context.push('/home/detail/${item.id}'),
+                );
+              },
             );
           },
         );

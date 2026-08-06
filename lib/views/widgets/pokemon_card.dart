@@ -37,32 +37,30 @@ class PokemonCard extends StatelessWidget {
               ),
               overflow: TextOverflow.ellipsis,
             ),
-            child: Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8, bottom: 4),
               child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Image.network(
-                    pokemon.imageUrl,
-                    height: 100,
-                    fit: BoxFit.contain,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return const SizedBox(
-                        height: 100,
-                        child: Center(
-                          child: SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
+                child: Image.network(
+                  pokemon.imageUrl,
+                  height: 100,
+                  fit: BoxFit.contain,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const SizedBox(
+                      height: 100,
+                      child: Center(
+                        child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(strokeWidth: 2),
                         ),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) => const Icon(
-                      Icons.catching_pokemon,
-                      size: 64,
-                      color: Colors.grey,
-                    ),
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) => const Icon(
+                    Icons.catching_pokemon,
+                    size: 64,
+                    color: Colors.grey,
                   ),
                 ),
               ),

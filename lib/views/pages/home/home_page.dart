@@ -82,20 +82,33 @@ class _HomePageState extends State<HomePage> {
                   const FetchPokemonList(offset: 0, limit: 50),
                 );
               },
-              child: GridView.builder(
-                padding: const EdgeInsets.all(16),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 0.82,
-                ),
-                itemCount: list.length,
-                itemBuilder: (context, index) {
-                  final item = list[index];
-                  return FavoritePokemonCard(
-                    pokemon: item,
-                    onTap: () => context.push('/home/detail/${item.id}'),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  int crossAxisCount = 2;
+                  if (constraints.maxWidth >= 1200) {
+                    crossAxisCount = 5;
+                  } else if (constraints.maxWidth >= 800) {
+                    crossAxisCount = 4;
+                  } else if (constraints.maxWidth >= 600) {
+                    crossAxisCount = 3;
+                  }
+
+                  return GridView.builder(
+                    padding: const EdgeInsets.all(16),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 0.82,
+                    ),
+                    itemCount: list.length,
+                    itemBuilder: (context, index) {
+                      final item = list[index];
+                      return FavoritePokemonCard(
+                        pokemon: item,
+                        onTap: () => context.push('/home/detail/${item.id}'),
+                      );
+                    },
                   );
                 },
               ),
