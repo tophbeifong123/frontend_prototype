@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-/// Single source of truth for Pokémon elemental types, icons, colors, and pastel backgrounds.
+/// Single source of truth สำหรับประเภทธาตุ ไอคอน สีประจําธาตุ และสีพาสเทลของการ์ด Pokémon
+/// Unified type palette & system icons helper.
 class PokemonTypeInfo {
   final String name;
   final String displayName;
