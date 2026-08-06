@@ -205,33 +205,47 @@ class _DetailPageState extends State<DetailPage> {
                           title: const Text('Evolution Chain'),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(vertical: 12),
-                            child: Wrap(
-                              alignment: WrapAlignment.center,
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              spacing: 8,
-                              runSpacing: 12,
-                              children: [
-                                for (int i = 0; i < detail.evolutions.length; i++) ...[
-                                  if (i > 0)
-                                    const Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 4),
-                                      child: Icon(
-                                        Icons.arrow_forward_ios_rounded,
-                                        size: 14,
-                                        color: Colors.grey,
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                final isWideEnough =
+                                    constraints.maxWidth >= (detail.evolutions.length * 105);
+
+                                Widget content = Row(
+                                  mainAxisAlignment: isWideEnough
+                                      ? MainAxisAlignment.center
+                                      : MainAxisAlignment.start,
+                                  mainAxisSize: isWideEnough
+                                      ? MainAxisSize.min
+                                      : MainAxisSize.max,
+                                  children: [
+                                    for (int i = 0; i < detail.evolutions.length; i++) ...[
+                                      if (i > 0)
+                                        const Padding(
+                                          padding: EdgeInsets.symmetric(horizontal: 4),
+                                          child: Icon(
+                                            Icons.arrow_forward_ios_rounded,
+                                            size: 14,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      _EvolutionStageCard(
+                                        evolution: detail.evolutions[i],
+                                        isCurrent: detail.evolutions[i].id == detail.id,
                                       ),
-                                    ),
-                                  _EvolutionStageCard(
-                                    evolution: detail.evolutions[i],
-                                    isCurrent: detail.evolutions[i].id == detail.id,
-                                    onTap: () {
-                                      if (detail.evolutions[i].id != detail.id) {
-                                        context.push('/home/detail/${detail.evolutions[i].id}');
-                                      }
-                                    },
-                                  ),
-                                ],
-                              ],
+                                    ],
+                                  ],
+                                );
+
+                                if (!isWideEnough) {
+                                  content = SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    physics: const BouncingScrollPhysics(),
+                                    child: content,
+                                  );
+                                }
+
+                                return Center(child: content);
+                              },
                             ),
                           ),
                         ),
@@ -253,12 +267,10 @@ class _DetailPageState extends State<DetailPage> {
 class _EvolutionStageCard extends StatelessWidget {
   final PokemonEvolution evolution;
   final bool isCurrent;
-  final VoidCallback onTap;
 
   const _EvolutionStageCard({
     required this.evolution,
     required this.isCurrent,
-    required this.onTap,
   });
 
   @override
@@ -266,48 +278,48 @@ class _EvolutionStageCard extends StatelessWidget {
     final formattedId = '#${evolution.id.toString().padLeft(3, '0')}';
     final colorScheme = ShadTheme.of(context).colorScheme;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isCurrent ? colorScheme.primary : colorScheme.border,
-            width: isCurrent ? 2 : 1,
+    return Container(
+      width: 84,
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isCurrent ? colorScheme.primary : colorScheme.border,
+          width: isCurrent ? 2 : 1,
+        ),
+        color: isCurrent ? colorScheme.primary.withValues(alpha: 0.08) : null,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.network(
+            evolution.imageUrl,
+            height: 56,
+            width: 56,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) => const Icon(
+              Icons.catching_pokemon,
+              size: 40,
+              color: Colors.grey,
+            ),
           ),
-          color: isCurrent ? colorScheme.primary.withValues(alpha: 0.08) : null,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.network(
-              evolution.imageUrl,
-              height: 64,
-              width: 64,
-              fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) => const Icon(
-                Icons.catching_pokemon,
-                size: 44,
-                color: Colors.grey,
-              ),
+          const SizedBox(height: 4),
+          Text(
+            formattedId,
+            style: const TextStyle(fontSize: 10, color: Colors.grey),
+          ),
+          Text(
+            evolution.name.toUpperCase(),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: isCurrent ? FontWeight.bold : FontWeight.w600,
+              color: isCurrent ? colorScheme.primary : null,
             ),
-            const SizedBox(height: 4),
-            Text(
-              formattedId,
-              style: const TextStyle(fontSize: 10, color: Colors.grey),
-            ),
-            Text(
-              evolution.name.toUpperCase(),
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: isCurrent ? FontWeight.bold : FontWeight.w600,
-                color: isCurrent ? colorScheme.primary : null,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
