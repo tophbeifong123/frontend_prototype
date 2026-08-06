@@ -106,7 +106,54 @@ class FavoritePokemonCard extends StatelessWidget {
           pokemon: pokemon,
           onTap: onTap,
           isFavorite: isFavorite,
-          onFavorite: () => context.read<FavoritesCubit>().toggle(pokemon),
+          onFavorite: () {
+            final cubit = context.read<FavoritesCubit>();
+            final wasFavorite = isFavorite;
+            cubit.toggle(pokemon);
+
+            final formattedId = '#${pokemon.id.toString().padLeft(3, '0')}';
+            final name = pokemon.name.toUpperCase();
+
+            if (!wasFavorite) {
+              ShadToaster.of(context).show(
+                ShadToast(
+                  title: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.favorite, color: Colors.redAccent, size: 18),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          '$formattedId $name added!',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  description: const Text('Saved to your favorite Pokémon list.'),
+                ),
+              );
+            } else {
+              ShadToaster.of(context).show(
+                ShadToast(
+                  title: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.favorite_border, color: Colors.grey, size: 18),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          '$formattedId $name removed',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  description: const Text('Removed from your favorite Pokémon list.'),
+                ),
+              );
+            }
+          },
         ),
       );
 }
