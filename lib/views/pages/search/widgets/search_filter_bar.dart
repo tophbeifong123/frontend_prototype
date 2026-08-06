@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/pokemon_type_helper.dart';
 import 'search_type_card.dart';
 
 class TypeFilterBar extends StatelessWidget {
@@ -64,7 +65,7 @@ class _AddTypeMenuState extends State<AddTypeMenu> {
               itemBuilder: (context, index) {
                 final option = typeOptions[index];
                 final selected = widget.selectedTypes.contains(option.name);
-                final color = typeColor(option.name);
+                final typeInfo = PokemonTypeHelper.getTypeInfo(option.name);
                 return InkWell(
                   key: ValueKey('add-type-${option.name}'),
                   onTap: () {
@@ -78,9 +79,9 @@ class _AddTypeMenuState extends State<AddTypeMenu> {
                     ),
                     child: Row(
                       children: [
-                        Icon(typeIcon(option.name), color: color, size: 19),
+                        Icon(typeInfo.icon, color: typeInfo.color, size: 19),
                         const SizedBox(width: 12),
-                        Expanded(child: Text(displayType(option.name))),
+                        Expanded(child: Text(typeInfo.displayName)),
                         Icon(
                           selected
                               ? Icons.check_box
@@ -119,20 +120,20 @@ class SelectedTypeChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = typeColor(type);
+    final typeInfo = PokemonTypeHelper.getTypeInfo(type);
     return Container(
       decoration: BoxDecoration(
-        color: color,
+        color: typeInfo.color,
         borderRadius: BorderRadius.circular(24),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           const SizedBox(width: 12),
-          Icon(typeIcon(type), size: 17, color: Colors.white),
+          Icon(typeInfo.icon, size: 17, color: Colors.white),
           const SizedBox(width: 7),
           Text(
-            displayType(type),
+            typeInfo.displayName,
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w700,

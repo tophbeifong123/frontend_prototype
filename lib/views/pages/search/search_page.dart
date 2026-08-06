@@ -76,21 +76,71 @@ class _SearchPageState extends State<SearchPage> {
     final showResults = hasFilters || _query.isNotEmpty;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Search Pokémon')),
+      backgroundColor: const Color(0xFFEAF1F7),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFEAF1F7),
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: const Text(
+          'Search Pokédex',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w900,
+            color: Color(0xFF0A1C2C),
+            letterSpacing: -0.5,
+          ),
+        ),
+        centerTitle: false,
+      ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
+        physics: const BouncingScrollPhysics(),
         children: [
-          TextField(
-            controller: _searchController,
-            onChanged: _onSearchChanged,
-            decoration: InputDecoration(
-              hintText: 'Search for a type or Pokémon...',
-              prefixIcon: const Icon(Icons.search),
-              filled: true,
-              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(24),
-                borderSide: BorderSide.none,
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.85),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x0A000000),
+                  blurRadius: 12,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            child: TextField(
+              controller: _searchController,
+              onChanged: _onSearchChanged,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Color(0xFF0A1C2C),
+                fontWeight: FontWeight.w500,
+              ),
+              decoration: InputDecoration(
+                hintText: 'Search for a type or Pokémon...',
+                hintStyle: const TextStyle(
+                  color: Color(0xFF8A9BA8),
+                  fontSize: 14,
+                ),
+                prefixIcon: const Icon(
+                  Icons.search_rounded,
+                  color: Color(0xFF0C60A1),
+                  size: 22,
+                ),
+                suffixIcon: _query.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear_rounded, size: 18),
+                        onPressed: () {
+                          _searchController.clear();
+                          _onSearchChanged('');
+                        },
+                      )
+                    : null,
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
               ),
             ),
           ),
@@ -119,10 +169,20 @@ class _SearchPageState extends State<SearchPage> {
           else ...[
             const Text(
               'Explore Elemental Powers',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF0A1C2C),
+              ),
             ),
             const SizedBox(height: 4),
-            const Text('Choose a type to start filtering Pokémon.'),
+            const Text(
+              'Choose a type to start filtering Pokémon.',
+              style: TextStyle(
+                fontSize: 13,
+                color: Color(0xFF5A6E7F),
+              ),
+            ),
             const SizedBox(height: 16),
             LayoutBuilder(
               builder: (context, constraints) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/pokemon_type_helper.dart';
 
 class TypeSearchOption {
   const TypeSearchOption(this.name, this.count);
@@ -39,7 +40,9 @@ class TypeSearchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = typeColor(option.name);
+    final typeInfo = PokemonTypeHelper.getTypeInfo(option.name);
+    final color = typeInfo.color;
+
     return Material(
       color: Theme.of(context).colorScheme.surface,
       borderRadius: BorderRadius.circular(16),
@@ -60,11 +63,11 @@ class TypeSearchCard extends StatelessWidget {
               CircleAvatar(
                 radius: 22,
                 backgroundColor: color,
-                child: Icon(typeIcon(option.name), color: Colors.white),
+                child: Icon(typeInfo.icon, color: Colors.white),
               ),
               const SizedBox(height: 10),
               Text(
-                displayType(option.name),
+                typeInfo.displayName,
                 style: const TextStyle(fontWeight: FontWeight.w800),
               ),
               Text(
@@ -79,30 +82,8 @@ class TypeSearchCard extends StatelessWidget {
   }
 }
 
-String displayType(String type) => type[0].toUpperCase() + type.substring(1);
+String displayType(String type) => PokemonTypeHelper.getDisplayName(type);
 
-Color typeColor(String type) => switch (type) {
-  'fire' => const Color(0xffef5350),
-  'water' => const Color(0xff42a5f5),
-  'grass' => const Color(0xff66bb6a),
-  'electric' => const Color(0xffffca28),
-  'psychic' => const Color(0xffec407a),
-  'ice' => const Color(0xff26c6da),
-  'dragon' => const Color(0xff5c6bc0),
-  'ghost' => const Color(0xff7e57c2),
-  'steel' => const Color(0xff78909c),
-  _ => const Color(0xff8d99a6),
-};
+Color typeColor(String type) => PokemonTypeHelper.getTypeColor(type);
 
-IconData typeIcon(String type) => switch (type) {
-  'fire' => Icons.local_fire_department,
-  'water' => Icons.water_drop,
-  'grass' => Icons.eco,
-  'electric' => Icons.bolt,
-  'psychic' => Icons.visibility,
-  'ice' => Icons.ac_unit,
-  'ghost' => Icons.nightlight_round,
-  'dragon' => Icons.pets,
-  'flying' => Icons.air,
-  _ => Icons.category,
-};
+IconData typeIcon(String type) => PokemonTypeHelper.getTypeIcon(type);

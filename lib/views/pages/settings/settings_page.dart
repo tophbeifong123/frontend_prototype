@@ -13,42 +13,32 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  static const _blue = Color(0xFF005DAC);
+  static const _blue = Color(0xFF0C60A1);
   bool _darkMode = false;
   bool _notifications = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9FD),
+      backgroundColor: const Color(0xFFEAF1F7),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF9F9FD),
-        foregroundColor: _blue,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/home'),
-        ),
+        backgroundColor: const Color(0xFFEAF1F7),
+        elevation: 0,
+        scrolledUnderElevation: 0,
         title: const Text(
           'Settings',
           style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w700,
-            color: _blue,
+            fontSize: 24,
+            fontWeight: FontWeight.w900,
+            color: Color(0xFF0A1C2C),
+            letterSpacing: -0.5,
           ),
         ),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 20),
-            child: CircleAvatar(
-              radius: 19,
-              backgroundColor: Color(0xFFD4E3FF),
-              child: Icon(Icons.person, color: _blue),
-            ),
-          ),
-        ],
+        centerTitle: false,
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+        physics: const BouncingScrollPhysics(),
         children: [
           _section('Appearance', [
             _row(
@@ -71,16 +61,17 @@ class _SettingsPageState extends State<SettingsPage> {
                   Text(
                     'English',
                     style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF414752),
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF5A6E7F),
                     ),
                   ),
-                  SizedBox(width: 8),
-                  Icon(Icons.chevron_right),
+                  SizedBox(width: 6),
+                  Icon(Icons.chevron_right_rounded, color: Color(0xFF8A9BA8)),
                 ],
               ),
             ),
           ]),
+          const SizedBox(height: 16),
           _section('Preferences', [
             _row(
               Icons.notifications_none_rounded,
@@ -93,12 +84,13 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
           ]),
+          const SizedBox(height: 16),
           _section('Storage', [
             _row(
               Icons.heart_broken_outlined,
               'Clear Favorites',
               trailing: IconButton(
-                icon: const Icon(Icons.delete_outline),
+                icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
                 onPressed: _clearFavorites,
               ),
             ),
@@ -108,50 +100,58 @@ class _SettingsPageState extends State<SettingsPage> {
               'Clear Cache',
               subtitle: '124 MB used',
               trailing: IconButton(
-                icon: const Icon(Icons.delete_outline),
+                icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
                 onPressed: _clearCache,
               ),
             ),
           ]),
+          const SizedBox(height: 16),
           _section('Information', [
             _row(
-              Icons.info_outline,
-              'About App',
-              trailing: const Icon(Icons.chevron_right),
+              Icons.info_outline_rounded,
+              'About Pokédex Explorer',
+              trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFF8A9BA8)),
             ),
             _divider(),
             _row(
               Icons.policy_outlined,
               'Privacy Policy',
-              trailing: const Icon(Icons.open_in_new),
+              trailing: const Icon(Icons.open_in_new_rounded, size: 18, color: Color(0xFF8A9BA8)),
             ),
             _divider(),
             _row(
-              Icons.terminal_outlined,
-              'Version info',
+              Icons.terminal_rounded,
+              'Version Info',
               trailing: const Text(
-                'v. 4.12.0 (Build 2024)',
+                'v4.12.0 (Build 2026)',
                 style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF6D7483),
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF5A6E7F),
+                  fontSize: 13,
                 ),
               ),
             ),
           ]),
-          const SizedBox(height: 42),
+          const SizedBox(height: 32),
           Center(
             child: TextButton.icon(
               onPressed: _signOut,
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
               icon: const Icon(
                 Icons.logout_rounded,
-                color: Color(0xFFBA1A1A),
+                color: Color(0xFFE53935),
               ),
               label: const Text(
                 'Sign Out',
                 style: TextStyle(
-                  color: Color(0xFFBA1A1A),
+                  color: Color(0xFFE53935),
                   fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
             ),
@@ -161,39 +161,39 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _section(String title, List<Widget> children) => Padding(
-        padding: const EdgeInsets.only(bottom: 28),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 5, bottom: 12),
-              child: Text(
-                title,
-                style: const TextStyle(
-                  color: _blue,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
+  Widget _section(String title, List<Widget> children) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 10),
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: Color(0xFF0A1C2C),
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.8),
+                width: 1.5,
+              ),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x0A000000),
+                  blurRadius: 12,
+                  offset: Offset(0, 4),
                 ),
-              ),
+              ],
             ),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0x4DC1C6D4)),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x0D000000),
-                    blurRadius: 3,
-                    offset: Offset(0, 1),
-                  ),
-                ],
-              ),
-              child: Column(children: children),
-            ),
-          ],
-        ),
+            child: Column(children: children),
+          ),
+        ],
       );
 
   Widget _row(
@@ -203,10 +203,10 @@ class _SettingsPageState extends State<SettingsPage> {
     required Widget trailing,
   }) =>
       Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         child: Row(
           children: [
-            Icon(icon, color: const Color(0xFF303846), size: 24),
+            Icon(icon, color: _blue, size: 22),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -215,8 +215,9 @@ class _SettingsPageState extends State<SettingsPage> {
                   Text(
                     title,
                     style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF0A1C2C),
                     ),
                   ),
                   if (subtitle != null) ...[
@@ -224,8 +225,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     Text(
                       subtitle,
                       style: const TextStyle(
-                        color: Color(0xFF717783),
-                        fontSize: 13,
+                        color: Color(0xFF5A6E7F),
+                        fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -239,8 +240,8 @@ class _SettingsPageState extends State<SettingsPage> {
       );
 
   Widget _divider() => const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24),
-        child: Divider(height: 1, color: Color(0x4DC1C6D4)),
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: Divider(height: 1, color: Color(0xFFE2E8F0)),
       );
 
   void _clearFavorites() => _toast('Favorites cleared');

@@ -5,6 +5,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../blocs/pokemon_detail/pokemon_detail_bloc.dart';
 import '../../../blocs/pokemon_detail/pokemon_detail_event.dart';
 import '../../../blocs/pokemon_detail/pokemon_detail_state.dart';
+import '../../../core/utils/pokemon_type_helper.dart';
 import '../../../models/pokemon.dart';
 import '../../widgets/loading_indicator.dart';
 import '../../widgets/stat_progress_bar.dart';
@@ -38,11 +39,22 @@ class _DetailPageState extends State<DetailPage> {
     final formattedId = '#${widget.pokemonId.toString().padLeft(3, '0')}';
 
     return Scaffold(
+      backgroundColor: const Color(0xFFEAF1F7),
       appBar: AppBar(
-        title: Text('Pokémon $formattedId Details'),
+        backgroundColor: const Color(0xFFEAF1F7),
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: Text(
+          'Pokémon $formattedId Details',
+          style: const TextStyle(
+            color: Color(0xFF0A1C2C),
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
         centerTitle: false,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF0A1C2C), size: 20),
           onPressed: () => context.pop(),
         ),
       ),
@@ -84,97 +96,150 @@ class _DetailPageState extends State<DetailPage> {
           if (state is PokemonDetailLoaded) {
             final detail = state.detail;
             final formattedDetailId = '#${detail.id.toString().padLeft(3, '0')}';
+            final primaryType = detail.types.isNotEmpty ? detail.types.first : 'normal';
+            final typeInfo = PokemonTypeHelper.getTypeInfo(primaryType);
+            final pastelColor = typeInfo.pastelBackgroundColor;
 
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 40),
+              physics: const BouncingScrollPhysics(),
               child: Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 550),
+                  constraints: const BoxConstraints(maxWidth: 600),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Header: Large official artwork image and Pokémon Name
-                      Center(
-                        child: Column(
-                          children: [
-                            Image.network(
-                              detail.imageUrl,
-                              height: 200,
-                              fit: BoxFit.contain,
-                              loadingBuilder: (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return const SizedBox(
-                                  height: 200,
-                                  child: Center(child: CircularProgressIndicator()),
-                                );
-                              },
-                              errorBuilder: (context, error, stackTrace) => const Icon(
-                                Icons.catching_pokemon,
-                                size: 120,
-                                color: Colors.grey,
+                      // Header Hero Card (Nintendo Switch Pastel Inspired)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: pastelColor,
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.8),
+                              width: 1.5,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF0A1C2C).withValues(alpha: 0.08),
+                                blurRadius: 16,
+                                offset: const Offset(0, 6),
                               ),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              '$formattedDetailId ${detail.name.toUpperCase()}',
-                              style: ShadTheme.of(context).textTheme.h2,
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 12),
-                            // Badges: Show element types using ShadBadge
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              alignment: WrapAlignment.center,
-                              children: detail.types
-                                  .map((type) => ShadBadge(
-                                        child: Text(type.toUpperCase()),
-                                      ))
-                                  .toList(),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Specs Card: Height (m) and Weight (kg)
-                      ShadCard(
-                        title: const Text('Physical Specs'),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            ],
+                          ),
+                          child: Stack(
                             children: [
-                              Column(
-                                children: [
-                                  Text(
-                                    'Height',
-                                    style: ShadTheme.of(context).textTheme.muted,
+                              // Pure Background PokéBall Watermark
+                              Positioned.fill(
+                                child: IgnorePointer(
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Transform.translate(
+                                      offset: const Offset(45, 0),
+                                      child: Icon(
+                                        Icons.catching_pokemon,
+                                        size: 260,
+                                        color: Colors.black.withValues(alpha: 0.04),
+                                      ),
+                                    ),
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${(detail.height / 10).toStringAsFixed(1)} m',
-                                    style: ShadTheme.of(context).textTheme.h4,
-                                  ),
-                                ],
+                                ),
                               ),
-                              Container(
-                                width: 1,
-                                height: 36,
-                                color: ShadTheme.of(context).colorScheme.border,
-                              ),
-                              Column(
-                                children: [
-                                  Text(
-                                    'Weight',
-                                    style: ShadTheme.of(context).textTheme.muted,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${(detail.weight / 10).toStringAsFixed(1)} kg',
-                                    style: ShadTheme.of(context).textTheme.h4,
-                                  ),
-                                ],
+                              // Card Content Foreground
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+                                child: Column(
+                                  children: [
+                                    // Large Prominent Floating Artwork Image
+                                    SizedBox(
+                                      height: 230,
+                                      child: Center(
+                                        child: Image.network(
+                                          detail.imageUrl,
+                                          height: 230,
+                                          fit: BoxFit.contain,
+                                          loadingBuilder: (context, child, loadingProgress) {
+                                            if (loadingProgress == null) return child;
+                                            return const SizedBox(
+                                              height: 230,
+                                              child: Center(child: CircularProgressIndicator()),
+                                            );
+                                          },
+                                          errorBuilder: (context, error, stackTrace) => const Icon(
+                                            Icons.catching_pokemon,
+                                            size: 120,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 18),
+                                    Text(
+                                      formattedDetailId,
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF5A6E7F),
+                                        letterSpacing: 1,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      detail.name.toUpperCase(),
+                                      style: const TextStyle(
+                                        fontSize: 26,
+                                        fontWeight: FontWeight.w900,
+                                        color: Color(0xFF0A1C2C),
+                                        letterSpacing: 0.5,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 12),
+                                    // Solid Type Badges matching PokemonTypeHelper
+                                    Wrap(
+                                      spacing: 6,
+                                      runSpacing: 6,
+                                      alignment: WrapAlignment.center,
+                                      children: detail.types.map((typeStr) {
+                                        final info = PokemonTypeHelper.getTypeInfo(typeStr);
+                                        return Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 11,
+                                            vertical: 5.5,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: info.color,
+                                            borderRadius: BorderRadius.circular(14),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: info.color.withValues(alpha: 0.3),
+                                                blurRadius: 4,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(info.icon, size: 13, color: Colors.white),
+                                              const SizedBox(width: 5),
+                                              Text(
+                                                info.displayName,
+                                                style: const TextStyle(
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.w800,
+                                                  color: Colors.white,
+                                                  letterSpacing: 0.3,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
@@ -182,71 +247,91 @@ class _DetailPageState extends State<DetailPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Base Stats Card: Reusable StatProgressBar
-                      ShadCard(
-                        title: const Text('Base Stats'),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          child: Column(
-                            children: detail.stats.entries.map((entry) {
-                              return StatProgressBar(
-                                label: entry.key,
-                                value: entry.value,
-                              );
-                            }).toList(),
-                          ),
+                      // Physical Specs Card
+                      _DetailCardSection(
+                        title: 'Physical Specs',
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _SpecItem(
+                              label: 'HEIGHT',
+                              value: '${(detail.height / 10).toStringAsFixed(1)} m',
+                              icon: Icons.height_rounded,
+                            ),
+                            Container(
+                              width: 1,
+                              height: 40,
+                              color: const Color(0xFFD3E0EA),
+                            ),
+                            _SpecItem(
+                              label: 'WEIGHT',
+                              value: '${(detail.weight / 10).toStringAsFixed(1)} kg',
+                              icon: Icons.scale_rounded,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Base Stats Card with Color Highlights
+                      _DetailCardSection(
+                        title: 'Base Stats',
+                        child: Column(
+                          children: detail.stats.entries.map((entry) {
+                            return StatProgressBar(
+                              label: entry.key,
+                              value: entry.value,
+                            );
+                          }).toList(),
                         ),
                       ),
 
-                      // Evolution Chain Card
+                      // Evolution Chain Section
                       if (detail.evolutions.isNotEmpty) ...[
                         const SizedBox(height: 16),
-                        ShadCard(
-                          title: const Text('Evolution Chain'),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            child: LayoutBuilder(
-                              builder: (context, constraints) {
-                                final isWideEnough =
-                                    constraints.maxWidth >= (detail.evolutions.length * 105);
+                        _DetailCardSection(
+                          title: 'Evolution Chain',
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              final isWideEnough =
+                                  constraints.maxWidth >= (detail.evolutions.length * 105);
 
-                                Widget content = Row(
-                                  mainAxisAlignment: isWideEnough
-                                      ? MainAxisAlignment.center
-                                      : MainAxisAlignment.start,
-                                  mainAxisSize: isWideEnough
-                                      ? MainAxisSize.min
-                                      : MainAxisSize.max,
-                                  children: [
-                                    for (int i = 0; i < detail.evolutions.length; i++) ...[
-                                      if (i > 0)
-                                        const Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 4),
-                                          child: Icon(
-                                            Icons.arrow_forward_ios_rounded,
-                                            size: 14,
-                                            color: Colors.grey,
-                                          ),
+                              Widget content = Row(
+                                mainAxisAlignment: isWideEnough
+                                    ? MainAxisAlignment.center
+                                    : MainAxisAlignment.start,
+                                mainAxisSize: isWideEnough
+                                    ? MainAxisSize.min
+                                    : MainAxisSize.max,
+                                children: [
+                                  for (int i = 0; i < detail.evolutions.length; i++) ...[
+                                    if (i > 0)
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 6),
+                                        child: Icon(
+                                          Icons.arrow_forward_ios_rounded,
+                                          size: 14,
+                                          color: Color(0xFF8A9BA8),
                                         ),
-                                      _EvolutionStageCard(
-                                        evolution: detail.evolutions[i],
-                                        isCurrent: detail.evolutions[i].id == detail.id,
                                       ),
-                                    ],
+                                    _EvolutionStageCard(
+                                      evolution: detail.evolutions[i],
+                                      isCurrent: detail.evolutions[i].id == detail.id,
+                                    ),
                                   ],
+                                ],
+                              );
+
+                              if (!isWideEnough) {
+                                content = SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  physics: const BouncingScrollPhysics(),
+                                  child: content,
                                 );
+                              }
 
-                                if (!isWideEnough) {
-                                  content = SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    physics: const BouncingScrollPhysics(),
-                                    child: content,
-                                  );
-                                }
-
-                                return Center(child: content);
-                              },
-                            ),
+                              return Center(child: content);
+                            },
                           ),
                         ),
                       ],
@@ -264,6 +349,98 @@ class _DetailPageState extends State<DetailPage> {
   }
 }
 
+class _DetailCardSection extends StatelessWidget {
+  final String title;
+  final Widget child;
+
+  const _DetailCardSection({
+    required this.title,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.8),
+          width: 1.5,
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0A000000),
+            blurRadius: 12,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF0A1C2C),
+            ),
+          ),
+          const SizedBox(height: 12),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _SpecItem extends StatelessWidget {
+  final String label;
+  final String value;
+  final IconData icon;
+
+  const _SpecItem({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: const Color(0xFF5A6E7F)),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF5A6E7F),
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            color: Color(0xFF0A1C2C),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _EvolutionStageCard extends StatelessWidget {
   final PokemonEvolution evolution;
   final bool isCurrent;
@@ -276,18 +453,20 @@ class _EvolutionStageCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final formattedId = '#${evolution.id.toString().padLeft(3, '0')}';
-    final colorScheme = ShadTheme.of(context).colorScheme;
+    const activeColor = Color(0xFF0C60A1);
 
     return Container(
-      width: 84,
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      width: 90,
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isCurrent ? colorScheme.primary : colorScheme.border,
+          color: isCurrent ? activeColor : const Color(0xFFD3E0EA),
           width: isCurrent ? 2 : 1,
         ),
-        color: isCurrent ? colorScheme.primary.withValues(alpha: 0.08) : null,
+        color: isCurrent
+            ? const Color(0xFF0C60A1).withValues(alpha: 0.08)
+            : const Color(0xFFF8FAFC),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -306,7 +485,11 @@ class _EvolutionStageCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             formattedId,
-            style: const TextStyle(fontSize: 10, color: Colors.grey),
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF5A6E7F),
+            ),
           ),
           Text(
             evolution.name.toUpperCase(),
@@ -315,8 +498,8 @@ class _EvolutionStageCard extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 11,
-              fontWeight: isCurrent ? FontWeight.bold : FontWeight.w600,
-              color: isCurrent ? colorScheme.primary : null,
+              fontWeight: isCurrent ? FontWeight.w800 : FontWeight.w600,
+              color: isCurrent ? activeColor : const Color(0xFF0A1C2C),
             ),
           ),
         ],

@@ -25,7 +25,7 @@ abstract class AppTheme {
         color: AppColors.surfaceDark,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           side: const BorderSide(color: AppColors.borderDark, width: 1),
         ),
       ),
@@ -51,10 +51,9 @@ abstract class AppTheme {
       ),
       cardTheme: CardThemeData(
         color: AppColors.surfaceLight,
-        elevation: 2,
+        elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: AppColors.borderLight, width: 1),
+          borderRadius: BorderRadius.circular(20),
         ),
       ),
     );
